@@ -1,13 +1,11 @@
-// const message = {
-//   username: 'spencer&james!',
-//   text: 'we\'re awesome',
-//   roomname: ''
-// };
 
 const app = {
   
   init: function() {
-    
+    $('.username').on('click', function() {
+      console.log('test');
+      
+    });
   },
   send: function(message) {
     $.ajax({
@@ -39,5 +37,24 @@ const app = {
   },
   clearMessages: function() {
     $('#chats').empty();
+  },
+  renderMessage: function(messageData) {
+    const $chat = $('<div></div>');
+    const $username = $('<div></div>');
+    const $message = $('<div></div>');
+    $username.addClass('username');
+    $username.text(messageData.username + ':');
+    $message.text(messageData.text);
+    $username.appendTo($chat);
+    $message.appendTo($chat);
+    $chat.appendTo($('#chats'));
+  },
+  renderRoom: function(roomName) {
+    const $room = $('<div></div>');
+    $room.text(roomName);
+    $room.appendTo($('#roomSelect')); 
+  },
+  addFriend: function() {
+    console.log('test');
   }
 };
