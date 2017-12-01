@@ -2,10 +2,7 @@
 const app = {
   
   init: function() {
-    $('.username').on('click', function() {
-      console.log('test');
-      
-    });
+    $('.username').on('click', this.handleUsernameClick);
   },
   send: function(message) {
     $.ajax({
@@ -54,7 +51,8 @@ const app = {
     $room.text(roomName);
     $room.appendTo($('#roomSelect')); 
   },
-  addFriend: function() {
-    console.log('test');
+
+  handleUsernameClick : function() {
+    
   }
 };
