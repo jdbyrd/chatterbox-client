@@ -3,6 +3,8 @@ const app = {
   
   init: function() {
     $('.username').on('click', this.handleUsernameClick);
+    
+    $('#send .submit').on('submit', this.handleSubmit);
   },
   send: function(message) {
     $.ajax({
@@ -52,7 +54,11 @@ const app = {
     $room.appendTo($('#roomSelect')); 
   },
 
-  handleUsernameClick : function() {
+  handleUsernameClick: function() {
+    
+  },
+  
+  handleSubmit: function() {
     
   }
 };
