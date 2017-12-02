@@ -7,6 +7,7 @@ const app = {
     window.setInterval(function() {
       app.fetch();
     }, 1000);    
+    // app.fetch();
   },
   send: function(message) {
     $.ajax({
@@ -47,6 +48,7 @@ const app = {
     if (messageData.username) {
       const username = messageData.username.replace(' ', '');
       const $chat = $('<div></div>');
+      $chat.addClass('chat');
       $chat.addClass(username);
       $chat.appendTo($('#chats'));
 
@@ -91,7 +93,6 @@ const app = {
       text: input,
       roomName: 'lobby'
     };
-    console.log(data);
     app.send(data);
   }
 };
