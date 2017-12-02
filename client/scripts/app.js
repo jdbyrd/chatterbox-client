@@ -43,20 +43,21 @@ const app = {
     $('#chats').empty();
   },
   renderMessage: function(messageData) {
+    // TODO: sanitize input from server before rendering (here?)
+    const name = messageData.username.replace(' ', '');
     const $chat = $('<div></div>');
-    const $username = $('<div></div>');
-    const $message = $('<div></div>');
-    $username.addClass('username');
-    let name = messageData.username.replace(' ', '');
     $chat.addClass(name);
+    $chat.appendTo($('#chats'));
+
+    const $username = $('<div></div>');
+    $username.addClass('username');
     $username.data({'username': name});
     $username.text(messageData.username + ':');
-    $message.text(messageData.text);
     $username.appendTo($chat);
+    
+    const $message = $('<div></div>');
+    $message.text(messageData.text);
     $message.appendTo($chat);
-    $chat.appendTo($('#chats'));
-    //ask why this works here and not in init
-    // $('.username').on('click', this.handleUsernameClick);
   },
   renderRoom: function(roomName) {
     const $room = $('<div></div>');
@@ -66,11 +67,10 @@ const app = {
 
   handleUsernameClick: function(event) {
     const username = $(this).data().username;
-    // console.log($(this).parent().children());
     $('.' + username).addClass('friend');
-    
   },
   
-  handleSubmit: function() {
+  handleSubmit: function(message) {
+
   }
 };
