@@ -11,7 +11,6 @@ const app = {
       });
     }
     $('.submit').on('submit', this.handleSubmit);
-    $('.username').on('click', this.handleUsernameClick);
   },
   send: function(message) {
     $.ajax({
@@ -44,6 +43,7 @@ const app = {
   },
   renderMessage: function(messageData) {
     // TODO: sanitize input from server before rendering (here?)
+    
     const username = messageData.username.replace(' ', '');
     const $chat = $('<div></div>');
     $chat.addClass(username);
@@ -62,6 +62,8 @@ const app = {
     if(this.friends[username]) {
       $('.' + username).addClass('friend');
     }
+
+    $('.username').on('click', this.handleUsernameClick);
   },
   renderRoom: function(roomName) {
     const $room = $('<div></div>');
@@ -71,8 +73,13 @@ const app = {
 
   handleUsernameClick: function(event) {
     const username = $(this).data().username;
-    app.friends[username] = username;
-    $('.' + username).addClass('friend');
+    if(app.friends[username]) {
+      delete app.friends[username];
+      $('.' + username).removeClass('friend');
+    } else{
+      app.friends[username] = username;
+      $('.' + username).addClass('friend');
+    }
   },
   
   handleSubmit: function(message) {
