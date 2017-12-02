@@ -1,14 +1,19 @@
 
 const app = {
   init: function() {
+    this.fetchedOnce = false;
     this.roomnames = {};
     this.friends = {};
     this.server = 'http://parse.atx.hackreactor.com/chatterbox/classes/messages';
     $('.submit').on('click', this.handleSubmit);
-    // window.setInterval(function() {
-    //   app.fetch();
-    // }, 1000);    
-    app.fetch();
+    this.fetchInterval();
+  },
+  fetchInterval: function(roomname) {
+    console.log(roomname);
+    window.clearInterval();
+    window.setInterval(function() {
+      app.fetch(roomname);
+    }, 1000);    
   },
   send: function(message) {
     $.ajax({
@@ -33,16 +38,22 @@ const app = {
         limit: 100
       },
       success: function (data) {
+        
+        const roomname = $('.dropdown option:selected').text();
         data.results.forEach(obj => {
           app.roomnames[obj.roomname] = obj.roomname;
         });
-        for (let k in app.roomnames) {
-          const $room = $('<option></option>');
-          $room.text(app.roomnames[k]);
-          $('.dropdown').append($room);
+        if (!app.fetchedOnce) {
+          for (let k in app.roomnames) {
+            const $room = $('<option></option>');
+            $room.text(app.roomnames[k]);
+            $('.dropdown').append($room);
+          }
+          app.fetchedOnce = true;
         }
+        
         app.clearMessages();
-        data.results.forEach(messageData => app.renderMessage(messageData));
+        data.results.forEach(messageData => app.renderMessage(messageData, roomname));
         console.log('chatterbox: Message received');
       },
       error: function (data) {
@@ -53,9 +64,9 @@ const app = {
   clearMessages: function() {
     $('#chats').empty();
   },
-  renderMessage: function(messageData) {
+  renderMessage: function(messageData, roomname) {
     // TODO: sanitize input from server before rendering (here?)
-    if (messageData.username) {
+    if (messageData.username && messageData.roomname === roomname) {
       const username = messageData.username.replace(' ', '');
       const $chat = $('<div></div>');
       $chat.addClass('chat');
@@ -84,7 +95,6 @@ const app = {
     $room.text(roomName);
     $room.appendTo($('#roomSelect')); 
   },
-
   handleUsernameClick: function(event) {
     const username = $(this).data().username;
     if (app.friends[username]) {
@@ -95,7 +105,6 @@ const app = {
       $('.' + username).addClass('friend');
     }
   },
-  
   handleSubmit: function() {
     let input = $('.input').val();
     const data = {
