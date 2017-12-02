@@ -7,6 +7,7 @@ const app = {
     this.server = 'http://parse.atx.hackreactor.com/chatterbox/classes/messages';
     $('.submit').on('click', this.handleSubmit);
     this.fetchInterval();
+    $('.spinner').hide();
   },
   fetchInterval: function(roomname) {
     console.log(roomname);
@@ -22,6 +23,7 @@ const app = {
       data: message,
       dataType: 'json',
       success: function (data) {
+        $('.spinner').hide();
         console.log('chatterbox: Message sent');
       },
       error: function (data) {
@@ -106,11 +108,13 @@ const app = {
     }
   },
   handleSubmit: function() {
+    $('.spinner').show();
     let input = $('.input').val();
+    const roomname = $('.dropdown option:selected').text();
     const data = {
       username: window.location.search.slice(10),
       text: input,
-      roomname: 'lobby'
+      roomname: roomname
     };
     app.send(data);
   }
