@@ -1,23 +1,19 @@
 
 const app = {
-  friends: {},
   init: function() {
+    this.friends = {};
     this.server = 'http://parse.atx.hackreactor.com/chatterbox/classes/messages';
-    for(let i = 0; i < 3; i++) {
-      app.renderMessage({
-        username: 'Mel Brooks',
-        text: 'I didn\'t get a harumph outa that guy.!',
-        roomname: 'lobby'
-      });
-    }
-    $('.submit').on('submit', this.handleSubmit);
+    $('.submit').on('click', this.handleSubmit);
+    window.setInterval(function() {
+      app.fetch();
+    }, 1000);    
   },
   send: function(message) {
     $.ajax({
       url: this.server,
       type: 'POST',
       data: message,
-      contentType: 'application/json',
+      dataType: 'json',
       success: function (data) {
         console.log('chatterbox: Message sent');
       },
@@ -30,7 +26,12 @@ const app = {
     $.ajax({
       url: this.server,
       contentType: 'application/json',
+      data: {
+        order: '-createdAt'
+      },
       success: function (data) {
+        app.clearMessages();
+        data.results.forEach(messageData => app.renderMessage(messageData));
         console.log('chatterbox: Message received');
       },
       error: function (data) {
@@ -43,27 +44,28 @@ const app = {
   },
   renderMessage: function(messageData) {
     // TODO: sanitize input from server before rendering (here?)
-    
-    const username = messageData.username.replace(' ', '');
-    const $chat = $('<div></div>');
-    $chat.addClass(username);
-    $chat.appendTo($('#chats'));
+    if (messageData.username) {
+      const username = messageData.username.replace(' ', '');
+      const $chat = $('<div></div>');
+      $chat.addClass(username);
+      $chat.appendTo($('#chats'));
 
-    const $username = $('<div></div>');
-    $username.addClass('username');
-    $username.data({'username': username});
-    $username.text(messageData.username + ':');
-    $username.appendTo($chat);
-    
-    const $message = $('<div></div>');
-    $message.text(messageData.text);
-    $message.appendTo($chat);
-    
-    if(this.friends[username]) {
-      $('.' + username).addClass('friend');
+      const $username = $('<div></div>');
+      $username.addClass('username');
+      $username.data({'username': username});
+      $username.text(messageData.username + ':');
+      $username.appendTo($chat);
+      
+      const $message = $('<div></div>');
+      $message.text(messageData.text);
+      $message.appendTo($chat);
+      
+      if (this.friends[username]) {
+        $('.' + username).addClass('friend');
+      }
+
+      $('.username').on('click', this.handleUsernameClick);
     }
-
-    $('.username').on('click', this.handleUsernameClick);
   },
   renderRoom: function(roomName) {
     const $room = $('<div></div>');
@@ -73,16 +75,23 @@ const app = {
 
   handleUsernameClick: function(event) {
     const username = $(this).data().username;
-    if(app.friends[username]) {
+    if (app.friends[username]) {
       delete app.friends[username];
       $('.' + username).removeClass('friend');
-    } else{
+    } else {
       app.friends[username] = username;
       $('.' + username).addClass('friend');
     }
   },
   
-  handleSubmit: function(message) {
-
+  handleSubmit: function() {
+    let input = $('.input').val();
+    const data = {
+      username: window.location.search.slice(10),
+      text: input,
+      roomName: 'lobby'
+    };
+    console.log(data);
+    app.send(data);
   }
 };
