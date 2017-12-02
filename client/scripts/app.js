@@ -2,13 +2,27 @@
 const app = {
   
   init: function() {
-    $('.username').on('click', this.handleUsernameClick);
-    
-    $('#send .submit').on('submit', this.handleSubmit);
+    $('.submit').on('submit', this.handleSubmit);
+    this.server = 'http://parse.atx.hackreactor.com/chatterbox/classes/messages';
+    app.renderMessage({
+      username: 'Mel Brooks',
+      text: 'I didn\'t get a harumph outa that guy.!',
+      roomname: 'lobby'
+    });
+    app.renderMessage({
+      username: 'Mel Brooks',
+      text: 'I didn\'t get a harumph outa that guy.!',
+      roomname: 'lobby'
+    });
+    app.renderMessage({
+      username: 'Mel Brooks',
+      text: 'I didn\'t get a harumph outa that guy.!',
+      roomname: 'lobby'
+    });
   },
   send: function(message) {
     $.ajax({
-      url: 'http://parse.atx.hackreactor.com/chatterbox/classes/messages',
+      url: this.server,
       type: 'POST',
       data: message,
       contentType: 'application/json',
@@ -20,11 +34,9 @@ const app = {
       }
     });
   },
-  fetch: function(message) {
+  fetch: function() {
     $.ajax({
-      url: undefined,
-      type: 'GET',
-      data: message,
+      url: this.server,
       contentType: 'application/json',
       success: function (data) {
         console.log('chatterbox: Message received');
@@ -42,11 +54,16 @@ const app = {
     const $username = $('<div></div>');
     const $message = $('<div></div>');
     $username.addClass('username');
+    let name = messageData.username.replace(' ', '');
+    $chat.addClass(name);
+    $username.data({'username': name});
     $username.text(messageData.username + ':');
     $message.text(messageData.text);
     $username.appendTo($chat);
     $message.appendTo($chat);
     $chat.appendTo($('#chats'));
+    //ask why this works here and not in init
+    $('.username').on('click', this.handleUsernameClick);
   },
   renderRoom: function(roomName) {
     const $room = $('<div></div>');
@@ -54,11 +71,13 @@ const app = {
     $room.appendTo($('#roomSelect')); 
   },
 
-  handleUsernameClick: function() {
+  handleUsernameClick: function(event) {
+    const username = $(this).data().username;
+    // console.log($(this).parent().children());
+    $('.' + username).addClass('friend');
     
   },
   
   handleSubmit: function() {
-    
   }
 };
