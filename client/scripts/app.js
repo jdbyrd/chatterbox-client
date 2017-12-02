@@ -1,13 +1,14 @@
 
 const app = {
   init: function() {
+    this.roomnames = {};
     this.friends = {};
     this.server = 'http://parse.atx.hackreactor.com/chatterbox/classes/messages';
     $('.submit').on('click', this.handleSubmit);
-    window.setInterval(function() {
-      app.fetch();
-    }, 1000);    
-    // app.fetch();
+    // window.setInterval(function() {
+    //   app.fetch();
+    // }, 1000);    
+    app.fetch();
   },
   send: function(message) {
     $.ajax({
@@ -28,9 +29,18 @@ const app = {
       url: this.server,
       contentType: 'application/json',
       data: {
-        order: '-createdAt'
+        order: '-createdAt',
+        limit: 100
       },
       success: function (data) {
+        data.results.forEach(obj => {
+          app.roomnames[obj.roomname] = obj.roomname;
+        });
+        for (let k in app.roomnames) {
+          const $room = $('<option></option>');
+          $room.text(app.roomnames[k]);
+          $('.dropdown').append($room);
+        }
         app.clearMessages();
         data.results.forEach(messageData => app.renderMessage(messageData));
         console.log('chatterbox: Message received');
@@ -91,7 +101,7 @@ const app = {
     const data = {
       username: window.location.search.slice(10),
       text: input,
-      roomName: 'lobby'
+      roomname: 'lobby'
     };
     app.send(data);
   }
