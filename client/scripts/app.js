@@ -1,6 +1,6 @@
 
 const app = {
-  
+  friends: {},
   init: function() {
     this.server = 'http://parse.atx.hackreactor.com/chatterbox/classes/messages';
     for(let i = 0; i < 3; i++) {
@@ -44,20 +44,24 @@ const app = {
   },
   renderMessage: function(messageData) {
     // TODO: sanitize input from server before rendering (here?)
-    const name = messageData.username.replace(' ', '');
+    const username = messageData.username.replace(' ', '');
     const $chat = $('<div></div>');
-    $chat.addClass(name);
+    $chat.addClass(username);
     $chat.appendTo($('#chats'));
 
     const $username = $('<div></div>');
     $username.addClass('username');
-    $username.data({'username': name});
+    $username.data({'username': username});
     $username.text(messageData.username + ':');
     $username.appendTo($chat);
     
     const $message = $('<div></div>');
     $message.text(messageData.text);
     $message.appendTo($chat);
+    
+    if(this.friends[username]) {
+      $('.' + username).addClass('friend');
+    }
   },
   renderRoom: function(roomName) {
     const $room = $('<div></div>');
@@ -67,6 +71,7 @@ const app = {
 
   handleUsernameClick: function(event) {
     const username = $(this).data().username;
+    app.friends[username] = username;
     $('.' + username).addClass('friend');
   },
   
