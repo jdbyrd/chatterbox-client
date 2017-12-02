@@ -2,23 +2,16 @@
 const app = {
   
   init: function() {
-    $('.submit').on('submit', this.handleSubmit);
     this.server = 'http://parse.atx.hackreactor.com/chatterbox/classes/messages';
-    app.renderMessage({
-      username: 'Mel Brooks',
-      text: 'I didn\'t get a harumph outa that guy.!',
-      roomname: 'lobby'
-    });
-    app.renderMessage({
-      username: 'Mel Brooks',
-      text: 'I didn\'t get a harumph outa that guy.!',
-      roomname: 'lobby'
-    });
-    app.renderMessage({
-      username: 'Mel Brooks',
-      text: 'I didn\'t get a harumph outa that guy.!',
-      roomname: 'lobby'
-    });
+    for(let i = 0; i < 3; i++) {
+      app.renderMessage({
+        username: 'Mel Brooks',
+        text: 'I didn\'t get a harumph outa that guy.!',
+        roomname: 'lobby'
+      });
+    }
+    $('.submit').on('submit', this.handleSubmit);
+    $('.username').on('click', this.handleUsernameClick);
   },
   send: function(message) {
     $.ajax({
@@ -63,7 +56,7 @@ const app = {
     $message.appendTo($chat);
     $chat.appendTo($('#chats'));
     //ask why this works here and not in init
-    $('.username').on('click', this.handleUsernameClick);
+    // $('.username').on('click', this.handleUsernameClick);
   },
   renderRoom: function(roomName) {
     const $room = $('<div></div>');
